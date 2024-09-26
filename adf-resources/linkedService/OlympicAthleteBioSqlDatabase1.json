@@ -1,0 +1,23 @@
+{
+	"name": "OlympicAthleteBioSqlDatabase1",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "dbxdatumo-sql-server.database.windows.net",
+			"database": "dbxdatumo-sql-db",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SQL",
+			"userName": "a853def28997",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "PipelineSyncGitKeyVault1",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "sql-server-password"
+			}
+		}
+	}
+}

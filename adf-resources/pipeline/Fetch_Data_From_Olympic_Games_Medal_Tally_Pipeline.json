@@ -41,7 +41,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "AzureSqlTable1",
+						"referenceName": "Olympic_Games_Medal_Tally_Table",
 						"type": "DatasetReference"
 					}
 				],

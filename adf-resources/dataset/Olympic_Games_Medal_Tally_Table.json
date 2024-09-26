@@ -1,5 +1,5 @@
 {
-	"name": "AzureSqlTable1",
+	"name": "Olympic_Games_Medal_Tally_Table",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "OlympicAthleteBioSqlDatabase1",

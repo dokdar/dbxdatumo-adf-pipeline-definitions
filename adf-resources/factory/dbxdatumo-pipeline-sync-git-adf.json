@@ -1,0 +1,9 @@
+{
+	"name": "dbxdatumo-pipeline-sync-git-adf",
+	"location": "westeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "d61d40c8-0198-4630-b9f7-b420ae9de1aa",
+		"tenantId": "aab1d022-64d5-4708-9e76-75153d3cfe28"
+	}
+}

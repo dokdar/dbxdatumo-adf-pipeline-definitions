@@ -1,5 +1,5 @@
 {
-	"name": "Fetch_Data_From_Olympic_Athlete_Event_Results",
+	"name": "Fetch_Data_From_Olympic_Athlete_Event_Results_Pipeline",
 	"properties": {
 		"activities": [
 			{

@@ -1,0 +1,59 @@
+{
+	"name": "AzureSqlTable1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OlympicAthleteBioSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "edition",
+				"type": "nvarchar"
+			},
+			{
+				"name": "edition_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "year",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "country",
+				"type": "nvarchar"
+			},
+			{
+				"name": "country_noc",
+				"type": "nvarchar"
+			},
+			{
+				"name": "gold",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "silver",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "bronze",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "total",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Olympic_Games_Medal_Tally"
+		}
+	}
+}

@@ -1,9 +1,9 @@
 {
-	"name": "Fetch_Data_From_Olympic_Athlete_Event_Results_Pipeline",
+	"name": "Fetch_Data_From_Olympic_Games_Medal_Tally_Pipeline",
 	"properties": {
 		"activities": [
 			{
-				"name": "Fetch_Data_From_Olympic_Athlete_Event_Results_Table",
+				"name": "Fetch_Data_From_Olympic_Games_Medal_Tally",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -41,13 +41,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Olympic_Athlete_Event_Results_Table",
+						"referenceName": "AzureSqlTable1",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "Olympic_Athlete_Event_Results_Storage",
+						"referenceName": "Olympic_Games_Medal_Tally_Storage",
 						"type": "DatasetReference"
 					}
 				]

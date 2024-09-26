@@ -1,0 +1,58 @@
+{
+	"name": "Olympic_Games_Medal_Tally_Storage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "@concat('output_', formatDateTime(utcnow(), 'yyyy-MM-dd_HH-mm-ss'), '.parquet')",
+				"folderPath": "olympic_games_medal_tally",
+				"fileSystem": "dbxdatumo-external"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "edition",
+				"type": "UTF8"
+			},
+			{
+				"name": "edition_id",
+				"type": "INT32"
+			},
+			{
+				"name": "year",
+				"type": "INT32"
+			},
+			{
+				"name": "country",
+				"type": "UTF8"
+			},
+			{
+				"name": "country_noc",
+				"type": "UTF8"
+			},
+			{
+				"name": "gold",
+				"type": "INT32"
+			},
+			{
+				"name": "silver",
+				"type": "INT32"
+			},
+			{
+				"name": "bronze",
+				"type": "INT32"
+			},
+			{
+				"name": "total",
+				"type": "INT32"
+			}
+		]
+	}
+}

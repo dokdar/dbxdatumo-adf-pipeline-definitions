@@ -1,0 +1,64 @@
+{
+	"name": "Olympic_Athlete_Event_Results_Table",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OlympicAthleteBioSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "edition",
+				"type": "nvarchar"
+			},
+			{
+				"name": "edition_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "country_noc",
+				"type": "nvarchar"
+			},
+			{
+				"name": "sport",
+				"type": "nvarchar"
+			},
+			{
+				"name": "event",
+				"type": "nvarchar"
+			},
+			{
+				"name": "result_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "athlete",
+				"type": "nvarchar"
+			},
+			{
+				"name": "athlete_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "pos",
+				"type": "nvarchar"
+			},
+			{
+				"name": "medal",
+				"type": "nvarchar"
+			},
+			{
+				"name": "isTeamSport",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Olympic_Athlete_Event_Results"
+		}
+	}
+}

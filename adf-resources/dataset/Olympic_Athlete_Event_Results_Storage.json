@@ -1,0 +1,69 @@
+{
+	"name": "Olympic_Athlete_Event_Results_Storage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@concat('output_', formatDateTime(utcnow(), 'yyyy-MM-dd_HH-mm-ss'), '.parquet')",
+					"type": "Expression"
+				},
+				"folderPath": "olympic_athlete_event_results",
+				"fileSystem": "dbxdatumo-external"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "edition",
+				"type": "UTF8"
+			},
+			{
+				"name": "edition_id",
+				"type": "INT32"
+			},
+			{
+				"name": "country_noc",
+				"type": "UTF8"
+			},
+			{
+				"name": "sport",
+				"type": "UTF8"
+			},
+			{
+				"name": "event",
+				"type": "UTF8"
+			},
+			{
+				"name": "result_id",
+				"type": "INT32"
+			},
+			{
+				"name": "athlete",
+				"type": "UTF8"
+			},
+			{
+				"name": "athlete_id",
+				"type": "INT32"
+			},
+			{
+				"name": "pos",
+				"type": "UTF8"
+			},
+			{
+				"name": "medal",
+				"type": "UTF8"
+			},
+			{
+				"name": "isTeamSport",
+				"type": "BOOLEAN"
+			}
+		]
+	}
+}

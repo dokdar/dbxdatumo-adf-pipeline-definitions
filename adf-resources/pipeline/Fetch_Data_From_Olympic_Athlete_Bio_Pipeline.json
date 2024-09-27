@@ -55,7 +55,14 @@
 			{
 				"name": "Create_External_Table",
 				"type": "WebActivity",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Fetch_Data_From_Olympic_Athlete_Bio",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,

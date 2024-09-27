@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "dbxdatumo-pipeline-sync-git-adf"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"value": ""
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://dbxdatumoextstorage.dfs.core.windows.net/"
+		},
+		"OlympicAthleteBioSqlDatabase1_properties_typeProperties_server": {
+			"value": "dbxdatumo-sql-server.database.windows.net"
+		},
+		"OlympicAthleteBioSqlDatabase1_properties_typeProperties_database": {
+			"value": "dbxdatumo-sql-db"
+		},
+		"OlympicAthleteBioSqlDatabase1_properties_typeProperties_userName": {
+			"value": "a853def28997"
+		},
+		"PipelineSyncGitKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://dbxdatumo-kv.vault.azure.net/"
+		},
+		"PipelineSyncGitKeyVault2_properties_typeProperties_baseUrl": {
+			"value": "https://dbxdatumo-kv.vault.azure.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

@@ -1,0 +1,729 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dbxdatumo-pipeline-sync-git-adf"
+		},
+		"AzureDataLakeStorage1_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage1'"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dbxdatumoextstorage.dfs.core.windows.net/"
+		},
+		"OlympicAthleteBioSqlDatabase1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "dbxdatumo-sql-server.database.windows.net"
+		},
+		"OlympicAthleteBioSqlDatabase1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "dbxdatumo-sql-db"
+		},
+		"OlympicAthleteBioSqlDatabase1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "a853def28997"
+		},
+		"PipelineSyncGitKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://dbxdatumo-kv.vault.azure.net/"
+		},
+		"PipelineSyncGitKeyVault2_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://dbxdatumo-kv.vault.azure.net/"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Fetch_Data_From_Olympic_Athlete_Bio_Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Fetch_Data_From_Olympic_Athlete_Bio",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Olympic_Athlete_Bio_Table",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Olympic_Athlete_Bio_Storage",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Olympic_Athlete_Bio_Table')]",
+				"[concat(variables('factoryId'), '/datasets/Olympic_Athlete_Bio_Storage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Fetch_Data_From_Olympic_Athlete_Event_Results_Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Fetch_Data_From_Olympic_Athlete_Event_Results_Table",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Olympic_Athlete_Event_Results_Table",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Olympic_Athlete_Event_Results_Storage",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Olympic_Athlete_Event_Results_Table')]",
+				"[concat(variables('factoryId'), '/datasets/Olympic_Athlete_Event_Results_Storage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Fetch_Data_From_Olympic_Games_Medal_Tally_Pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Fetch_Data_From_Olympic_Games_Medal_Tally",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Olympic_Games_Medal_Tally_Table",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Olympic_Games_Medal_Tally_Storage",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Olympic_Games_Medal_Tally_Table')]",
+				"[concat(variables('factoryId'), '/datasets/Olympic_Games_Medal_Tally_Storage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Olympic_Athlete_Bio_Storage')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('output_', formatDateTime(utcnow(), 'yyyy-MM-dd_HH-mm-ss'), '.parquet')",
+							"type": "Expression"
+						},
+						"folderPath": "olympic_athlete_bio",
+						"fileSystem": "dbxdatumo-external"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "athlete_id",
+						"type": "INT32"
+					},
+					{
+						"name": "name",
+						"type": "UTF8"
+					},
+					{
+						"name": "sex",
+						"type": "UTF8"
+					},
+					{
+						"name": "born",
+						"type": "UTF8"
+					},
+					{
+						"name": "height",
+						"type": "INT32"
+					},
+					{
+						"name": "weight",
+						"type": "UTF8"
+					},
+					{
+						"name": "country",
+						"type": "UTF8"
+					},
+					{
+						"name": "country_noc",
+						"type": "UTF8"
+					},
+					{
+						"name": "description",
+						"type": "UTF8"
+					},
+					{
+						"name": "special_notes",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Olympic_Athlete_Bio_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OlympicAthleteBioSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "athlete_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sex",
+						"type": "nvarchar"
+					},
+					{
+						"name": "born",
+						"type": "nvarchar"
+					},
+					{
+						"name": "height",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "weight",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country_noc",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "special_notes",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Olympic_Athlete_Bio"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OlympicAthleteBioSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Olympic_Athlete_Event_Results_Storage')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('output_', formatDateTime(utcnow(), 'yyyy-MM-dd_HH-mm-ss'), '.parquet')",
+							"type": "Expression"
+						},
+						"folderPath": "olympic_athlete_event_results",
+						"fileSystem": "dbxdatumo-external"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "edition",
+						"type": "UTF8"
+					},
+					{
+						"name": "edition_id",
+						"type": "INT32"
+					},
+					{
+						"name": "country_noc",
+						"type": "UTF8"
+					},
+					{
+						"name": "sport",
+						"type": "UTF8"
+					},
+					{
+						"name": "event",
+						"type": "UTF8"
+					},
+					{
+						"name": "result_id",
+						"type": "INT32"
+					},
+					{
+						"name": "athlete",
+						"type": "UTF8"
+					},
+					{
+						"name": "athlete_id",
+						"type": "INT32"
+					},
+					{
+						"name": "pos",
+						"type": "UTF8"
+					},
+					{
+						"name": "medal",
+						"type": "UTF8"
+					},
+					{
+						"name": "isTeamSport",
+						"type": "BOOLEAN"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Olympic_Athlete_Event_Results_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OlympicAthleteBioSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "edition",
+						"type": "nvarchar"
+					},
+					{
+						"name": "edition_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "country_noc",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sport",
+						"type": "nvarchar"
+					},
+					{
+						"name": "event",
+						"type": "nvarchar"
+					},
+					{
+						"name": "result_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "athlete",
+						"type": "nvarchar"
+					},
+					{
+						"name": "athlete_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "pos",
+						"type": "nvarchar"
+					},
+					{
+						"name": "medal",
+						"type": "nvarchar"
+					},
+					{
+						"name": "isTeamSport",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Olympic_Athlete_Event_Results"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OlympicAthleteBioSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Olympic_Games_Medal_Tally_Storage')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('output_', formatDateTime(utcnow(), 'yyyy-MM-dd_HH-mm-ss'), '.parquet')",
+							"type": "Expression"
+						},
+						"folderPath": "olympic_games_medal_tally",
+						"fileSystem": "dbxdatumo-external"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "edition",
+						"type": "UTF8"
+					},
+					{
+						"name": "edition_id",
+						"type": "INT32"
+					},
+					{
+						"name": "year",
+						"type": "INT32"
+					},
+					{
+						"name": "country",
+						"type": "UTF8"
+					},
+					{
+						"name": "country_noc",
+						"type": "UTF8"
+					},
+					{
+						"name": "gold",
+						"type": "INT32"
+					},
+					{
+						"name": "silver",
+						"type": "INT32"
+					},
+					{
+						"name": "bronze",
+						"type": "INT32"
+					},
+					{
+						"name": "total",
+						"type": "INT32"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Olympic_Games_Medal_Tally_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OlympicAthleteBioSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "edition",
+						"type": "nvarchar"
+					},
+					{
+						"name": "edition_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country_noc",
+						"type": "nvarchar"
+					},
+					{
+						"name": "gold",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "silver",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "bronze",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "total",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Olympic_Games_Medal_Tally"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OlympicAthleteBioSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage1_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OlympicAthleteBioSqlDatabase1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('OlympicAthleteBioSqlDatabase1_properties_typeProperties_server')]",
+					"database": "[parameters('OlympicAthleteBioSqlDatabase1_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('OlympicAthleteBioSqlDatabase1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "PipelineSyncGitKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "sql-server-password"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/PipelineSyncGitKeyVault1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PipelineSyncGitKeyVault1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('PipelineSyncGitKeyVault1_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PipelineSyncGitKeyVault2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('PipelineSyncGitKeyVault2_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

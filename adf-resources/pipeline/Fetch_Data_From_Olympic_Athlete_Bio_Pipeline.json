@@ -86,7 +86,7 @@
 							"--target-mode",
 							"append",
 							"--target-catalog",
-							"main",
+							"olympic_catalog",
 							"--target-schema",
 							"olympic_db",
 							"--target-table",

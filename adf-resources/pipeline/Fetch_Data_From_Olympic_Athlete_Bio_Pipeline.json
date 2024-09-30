@@ -92,13 +92,13 @@
 							"--target-table",
 							"olympic_athlete_bio",
 							"--source-path",
-							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/dbxdatumo-external/olympic_athlete_bio",
+							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/dbxdatumo-external/olympic_athlete_bio/",
 							"--source-format",
 							"parquet",
 							"--source-schema-location",
 							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/dbxdatumo-external/schemas/olympic_athlete_bio.json",
 							"--target-checkpoint-location",
-							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/dbxdatumo-external/checkpoints/olympic_athlete_bio"
+							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/dbxdatumo-external/checkpoints/olympic_athlete_bio/"
 						]
 					},
 					"authentication": {

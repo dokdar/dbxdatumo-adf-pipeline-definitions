@@ -80,7 +80,7 @@
 							"--command",
 							"adls-ingest",
 							"--target-path",
-							"",
+							"/path/to/data",
 							"--target-format",
 							"delta",
 							"--target-mode",

@@ -74,33 +74,7 @@
 				"typeProperties": {
 					"method": "POST",
 					"url": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.0/jobs/run-now",
-					"body": {
-						"job_id": "950675784745583",
-						"python_params": [
-							"--command",
-							"adls-ingest",
-							"--target-path",
-							"/path/to/data",
-							"--target-format",
-							"delta",
-							"--target-mode",
-							"append",
-							"--target-catalog",
-							"olympic_catalog",
-							"--target-schema",
-							"olympic_db",
-							"--target-table",
-							"olympic_athlete_bio",
-							"--source-path",
-							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/olympic_athlete_bio/",
-							"--source-format",
-							"parquet",
-							"--source-schema-location",
-							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/schemas/olympic_athlete_bio.json",
-							"--target-checkpoint-location",
-							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/checkpoints/olympic_athlete_bio/"
-						]
-					},
+					"body": "{\n    \\\"job_id\\\": \\\"950675784745583\\\",\n    \\\"python_params\\\": [\n        \\\"--command\\\", \\\"adls-ingest\\\",\n        \\\"--target-path\\\", \\\"/path/to/data\\\",\n        \\\"--target-format\\\", \\\"delta\\\",\n        \\\"--target-mode\\\", \\\"append\\\",\n        \\\"--target-catalog\\\", \\\"olympic_catalog\\\",\n        \\\"--target-schema\\\", \\\"olympic_db\\\",\n        \\\"--target-table\\\", \\\"olympic_athlete_bio\\\",\n        \\\"--source-path\\\", \\\"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/olympic_athlete_bio/\\\",\n        \\\"--source-format\\\", \\\"parquet\\\",\n        \\\"--source-schema-location\\\", \\\"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/schemas/olympic_athlete_bio.json\\\",\n        \\\"--target-checkpoint-location\\\", \\\"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/checkpoints/olympic_athlete_bio/\\\"\n    ]\n}",
 					"authentication": {
 						"type": "MSI",
 						"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"

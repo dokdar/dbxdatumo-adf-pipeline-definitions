@@ -86,7 +86,7 @@
 							"--target-mode",
 							"append",
 							"--target-catalog",
-							"olympic_catalog",
+							"main",
 							"--target-schema",
 							"olympic_db",
 							"--target-table",
@@ -96,7 +96,7 @@
 							"--source-format",
 							"parquet",
 							"--source-schema-location",
-							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/dbxdatumo-external/schemas/",
+							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/dbxdatumo-external/schemas/olympic_athlete_bio.json",
 							"--target-checkpoint-location",
 							"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/dbxdatumo-external/checkpoints/olympic_athlete_bio/"
 						]

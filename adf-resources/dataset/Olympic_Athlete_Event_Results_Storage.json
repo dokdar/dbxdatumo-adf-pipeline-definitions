@@ -10,10 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": {
-					"value": "@concat('output_', formatDateTime(utcnow(), 'yyyy-MM-dd_HH-mm-ss'), '.parquet')",
-					"type": "Expression"
-				},
 				"folderPath": "olympic_athlete_event_results",
 				"fileSystem": "dbxdatumo-external"
 			},

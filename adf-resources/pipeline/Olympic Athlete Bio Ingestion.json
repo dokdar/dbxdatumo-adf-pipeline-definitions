@@ -98,7 +98,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@or(equals(activity('Check_Databricks_Job_Status').output.status.state, 'SUCCESSED'), equals(activity('Check_Databricks_Job_Status').output.status.state, 'FAILED'))",
+						"value": "@or(equals(activity('Check_Databricks_Job_Status').output.state.result_state, 'SUCCESS'), equals(activity('Check_Databricks_Job_Status').output.state.result_state, 'FAILED'))",
 						"type": "Expression"
 					},
 					"activities": [

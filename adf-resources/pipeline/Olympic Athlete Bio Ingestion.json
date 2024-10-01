@@ -85,7 +85,7 @@
 				}
 			},
 			{
-				"name": "Check_Databricks_Job_Status",
+				"name": "_Check_Databricks_Job_Status",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
@@ -117,12 +117,6 @@
 						"dependencyConditions": [
 							"Skipped"
 						]
-					},
-					{
-						"activity": "Check_Databricks_Job_Status",
-						"dependencyConditions": [
-							"Skipped"
-						]
 					}
 				],
 				"userProperties": [],
@@ -131,6 +125,32 @@
 						"value": "@or(equals(activity('Check_Databricks_Job_Status').output.run_state.result_state, 'SUCCESS'), equals(activity('Check_Databricks_Job_Status').output.run_state.result_state, 'FAILED'))\n",
 						"type": "Expression"
 					},
+					"activities": [
+						{
+							"name": "Check_Databricks_Job_Status",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"method": "GET",
+								"url": {
+									"value": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.1/jobs/runs/get?run-id=@{activity('Create_External_Olympic_Athlete_Table').output.run_id}/",
+									"type": "Expression"
+								},
+								"authentication": {
+									"type": "MSI",
+									"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+								}
+							}
+						}
+					],
 					"timeout": "0.00:00:30"
 				}
 			}

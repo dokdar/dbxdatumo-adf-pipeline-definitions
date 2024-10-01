@@ -144,7 +144,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@equals(activity('Check_Databricks_Job_Status').output.state.life_cycle_state, 'SUCCESS')",
+						"value": "@equals(activity('Check_Databricks_Job_Status').output.state.result_state, 'SUCCESS')",
 						"type": "Expression"
 					},
 					"ifFalseActivities": [

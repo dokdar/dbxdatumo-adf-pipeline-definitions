@@ -147,6 +147,24 @@
 						"value": "@equals(activity('Check_Databricks_Job_Status').output.status.state, 'SUCCESS')",
 						"type": "Expression"
 					},
+					"ifFalseActivities": [
+						{
+							"name": "Fail",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": {
+									"value": "Pipeline failed due to unsuccessful job completion.",
+									"type": "Expression"
+								},
+								"errorCode": {
+									"value": "DB_JOB_FAILURE",
+									"type": "Expression"
+								}
+							}
+						}
+					],
 					"ifTrueActivities": [
 						{
 							"name": "Success",

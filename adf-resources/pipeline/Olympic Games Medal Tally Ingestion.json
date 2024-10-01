@@ -1,9 +1,9 @@
 {
-	"name": "Fetch_Data_From_Olympic_Games_Medal_Tally_Pipeline",
+	"name": "Olympic Games Medal Tally Ingestion",
 	"properties": {
 		"activities": [
 			{
-				"name": "Fetch_Data_From_Olympic_Games_Medal_Tally",
+				"name": "Copy_Olympic_Games_Medal_Tally_Data",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {

@@ -1,5 +1,5 @@
 {
-	"name": "Fetch_Data_From_Olympic_Athlete_Bio_Pipeline",
+	"name": "Olympic Athlete Bio Ingestion",
 	"properties": {
 		"activities": [
 			{

@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy_Olympic_Athlete_Data",
+				"name": "Copy_Olympic_Athlete_Bio_Data",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -53,11 +53,11 @@
 				]
 			},
 			{
-				"name": "Create_External_Olympic_Athlete_Table",
+				"name": "Create_External_Olympic_Athlete_Bio_Table",
 				"type": "WebActivity",
 				"dependsOn": [
 					{
-						"activity": "Copy_Olympic_Athlete_Data",
+						"activity": "Copy_Olympic_Athlete_Bio_Data",
 						"dependencyConditions": [
 							"Completed"
 						]
@@ -89,7 +89,7 @@
 				"type": "Until",
 				"dependsOn": [
 					{
-						"activity": "Create_External_Olympic_Athlete_Table",
+						"activity": "Create_External_Olympic_Athlete_Bio_Table",
 						"dependencyConditions": [
 							"Skipped"
 						]

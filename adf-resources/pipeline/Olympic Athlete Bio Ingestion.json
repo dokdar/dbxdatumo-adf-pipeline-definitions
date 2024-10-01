@@ -85,30 +85,6 @@
 				}
 			},
 			{
-				"name": "_Check_Databricks_Job_Status",
-				"type": "WebActivity",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"method": "GET",
-					"url": {
-						"value": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.1/jobs/runs/get?run-id=@{activity('Create_External_Olympic_Athlete_Table').output.run_id}/",
-						"type": "Expression"
-					},
-					"authentication": {
-						"type": "MSI",
-						"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
-					}
-				}
-			},
-			{
 				"name": "Wait_For_Databricks_Job_Completion",
 				"type": "Until",
 				"dependsOn": [

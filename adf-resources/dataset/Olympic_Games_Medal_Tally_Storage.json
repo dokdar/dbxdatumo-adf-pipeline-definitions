@@ -10,7 +10,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "@concat('output_', formatDateTime(utcnow(), 'yyyy-MM-dd_HH-mm-ss'), '.parquet')",
 				"folderPath": "olympic_games_medal_tally",
 				"fileSystem": "dbxdatumo-external"
 			},

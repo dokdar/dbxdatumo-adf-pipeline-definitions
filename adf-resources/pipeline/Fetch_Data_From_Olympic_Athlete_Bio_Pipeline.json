@@ -73,7 +73,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"method": "POST",
-					"url": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.1/jobs/run-now",
+					"url": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.1/jobs/run-now/",
 					"body": {
 						"value": "{\n  \"job_id\": \"950675784745583\",\n  \"python_params\": [\n    \"--command\", \"adls-ingest\",\n    \"--target-path\", \"/path/to/data\",\n    \"--target-format\", \"delta\",\n    \"--target-mode\", \"append\",\n    \"--target-catalog\", \"test_adf\",\n    \"--target-schema\", \"test\",\n    \"--target-table\", \"olympic_athlete_bio\",\n    \"--source-path\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/olympic_athlete_bio/\",\n    \"--source-format\", \"parquet\",\n    \"--source-schema-location\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/schemas/olympic_athlete_bio.json\",\n    \"--target-checkpoint-location\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/checkpoints/olympic_athlete_bio/\"\n    ]\n}\n",
 						"type": "Expression"

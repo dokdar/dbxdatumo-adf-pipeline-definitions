@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Fetch_Data_From_Olympic_Athlete_Event_Results_Table",
+				"name": "Copy_Olympic_Athlete_Event_Results",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {

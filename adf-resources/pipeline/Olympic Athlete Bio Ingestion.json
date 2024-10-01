@@ -91,7 +91,7 @@
 					{
 						"activity": "Create_External_Olympic_Athlete_Bio_Table",
 						"dependencyConditions": [
-							"Skipped"
+							"Completed"
 						]
 					}
 				],

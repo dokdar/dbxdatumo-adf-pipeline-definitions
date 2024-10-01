@@ -98,7 +98,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@or(equals(activity('Check_Databricks_Job_Status').output.state.result_state, 'SUCCESS'), equals(activity('Check_Databricks_Job_Status').output.state.result_state, 'FAILED'))",
+						"value": "@equals(activity('Check_Databricks_Job_Status').output.state.life_cycle_state, 'TERMINATED')",
 						"type": "Expression"
 					},
 					"activities": [
@@ -128,6 +128,50 @@
 						}
 					],
 					"timeout": "0.12:00:00"
+				}
+			},
+			{
+				"name": "Check Job Success",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Wait_For_Databricks_Job_Completion",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(activity('Check_Databricks_Job_Status').output.status.state, 'SUCCESS')",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Success",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "pipelineReturnValue",
+								"value": [
+									{
+										"key": "success",
+										"value": {
+											"type": "Boolean",
+											"content": true
+										}
+									}
+								],
+								"setSystemVariable": true
+							}
+						}
+					]
 				}
 			}
 		],

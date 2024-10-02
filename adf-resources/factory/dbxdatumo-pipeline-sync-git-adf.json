@@ -1,5 +1,13 @@
 {
 	"name": "dbxdatumo-pipeline-sync-git-adf",
+	"properties": {
+		"globalParameters": {
+			"temp": {
+				"type": "string",
+				"value": "temp"
+			}
+		}
+	},
 	"location": "westeurope",
 	"identity": {
 		"type": "SystemAssigned",

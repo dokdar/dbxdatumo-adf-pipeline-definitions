@@ -167,10 +167,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@concat('output_', formatDateTime(utcnow(), 'yyyy-MM-dd_HH-mm-ss'), '.parquet')",
-							"type": "Expression"
-						},
 						"folderPath": "olympic_athlete_event_results",
 						"fileSystem": "dbxdatumo-external"
 					},
@@ -241,10 +237,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": {
-							"value": "@concat('output_', formatDateTime(utcnow(), 'yyyy-MM-dd_HH-mm-ss'), '.parquet')",
-							"type": "Expression"
-						},
 						"folderPath": "olympic_games_medal_tally",
 						"fileSystem": "dbxdatumo-external"
 					},
@@ -319,6 +311,70 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/PipelineSyncGitKeyVault1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "OlympicAthleteBioSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "athlete_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sex",
+						"type": "nvarchar"
+					},
+					{
+						"name": "born",
+						"type": "nvarchar"
+					},
+					{
+						"name": "height",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "weight",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country_noc",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "special_notes",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Olympic_Athlete_Bio"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/OlympicAthleteBioSqlDatabase1')]"
 			]
 		},
 		{
@@ -519,13 +575,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Fetch_Data_From_Olympic_Athlete_Bio_Pipeline')]",
+			"name": "[concat(parameters('factoryName'), '/Olympic Athlete Bio Ingestion')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Fetch_Data_From_Olympic_Athlete_Bio",
+						"name": "Copy_Olympic_Athlete_Bio_Data",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -575,6 +631,148 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Create_External_Olympic_Athlete_Bio_Table",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Copy_Olympic_Athlete_Bio_Data",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.1/jobs/run-now/",
+							"body": {
+								"value": "{\n  \"job_id\": \"950675784745583\",\n  \"python_params\": [\n    \"--command\", \"adls-ingest\",\n    \"--target-path\", \"/path/to/data\",\n    \"--target-format\", \"delta\",\n    \"--target-mode\", \"append\",\n    \"--target-catalog\", \"test_adf\",\n    \"--target-schema\", \"test\",\n    \"--target-table\", \"olympic_athlete_bio\",\n    \"--source-path\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/olympic_athlete_bio/\",\n    \"--source-format\", \"parquet\",\n    \"--source-schema-location\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/schemas/olympic_athlete_bio/\",\n    \"--target-checkpoint-location\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/checkpoints/olympic_athlete_bio/\"\n    ]\n}\n",
+								"type": "Expression"
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+							}
+						}
+					},
+					{
+						"name": "Wait_For_Databricks_Job_Completion",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "Create_External_Olympic_Athlete_Bio_Table",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Check_Databricks_Job_Status').output.state.life_cycle_state, 'TERMINATED')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Check_Databricks_Job_Status",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 5,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.0/jobs/runs/get?run_id=@{activity('Create_External_Olympic_Athlete_Bio_Table').output.run_id}\n",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "MSI",
+											"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+										}
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					},
+					{
+						"name": "Check Job Success",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Wait_For_Databricks_Job_Completion",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Check_Databricks_Job_Status').output.state.result_state, 'SUCCESS')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Fail",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": {
+											"value": "Pipeline failed due to unsuccessful job completion.",
+											"type": "Expression"
+										},
+										"errorCode": {
+											"value": "DB_JOB_FAILURE",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "Success",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineReturnValue",
+										"value": [
+											{
+												"key": "success",
+												"value": {
+													"type": "Boolean",
+													"content": true
+												}
+											}
+										],
+										"setSystemVariable": true
+									}
+								}
+							]
+						}
 					}
 				],
 				"policy": {
@@ -588,13 +786,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Fetch_Data_From_Olympic_Athlete_Event_Results_Pipeline')]",
+			"name": "[concat(parameters('factoryName'), '/Olympic Athlete Event Results Ingestion')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Fetch_Data_From_Olympic_Athlete_Event_Results_Table",
+						"name": "Copy_Olympic_Athlete_Event_Results_Data",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -644,6 +842,148 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Create_External_Olympic_Athlete_Event_Results_Table",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Copy_Olympic_Athlete_Event_Results_Data",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.1/jobs/run-now/",
+							"body": {
+								"value": "{\n  \"job_id\": \"950675784745583\",\n  \"python_params\": [\n    \"--command\", \"adls-ingest\",\n    \"--target-path\", \"/path/to/data\",\n    \"--target-format\", \"delta\",\n    \"--target-mode\", \"append\",\n    \"--target-catalog\", \"test_adf\",\n    \"--target-schema\", \"test\",\n    \"--target-table\", \"olympic_athlete_event_results\",\n    \"--source-path\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/olympic_athlete_event_results/\",\n    \"--source-format\", \"parquet\",\n    \"--source-schema-location\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/schemas/olympic_athlete_event_results/\",\n    \"--target-checkpoint-location\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/checkpoints/olympic_athlete_event_results/\"\n    ]\n}\n",
+								"type": "Expression"
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+							}
+						}
+					},
+					{
+						"name": "Wait_For_Databricks_Job_Completion",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "Create_External_Olympic_Athlete_Event_Results_Table",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Check_Databricks_Job_Status').output.state.life_cycle_state, 'TERMINATED')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Check_Databricks_Job_Status",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 5,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.0/jobs/runs/get?run_id=@{activity('Create_External_Olympic_Athlete_Event_Results_Table').output.run_id}\n",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "MSI",
+											"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+										}
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					},
+					{
+						"name": "Check Job Success",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Wait_For_Databricks_Job_Completion",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Check_Databricks_Job_Status').output.state.result_state, 'SUCCESS')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Fail",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": {
+											"value": "Pipeline failed due to unsuccessful job completion.",
+											"type": "Expression"
+										},
+										"errorCode": {
+											"value": "DB_JOB_FAILURE",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "Success",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineReturnValue",
+										"value": [
+											{
+												"key": "success",
+												"value": {
+													"type": "Boolean",
+													"content": true
+												}
+											}
+										],
+										"setSystemVariable": true
+									}
+								}
+							]
+						}
 					}
 				],
 				"policy": {
@@ -657,13 +997,13 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Fetch_Data_From_Olympic_Games_Medal_Tally_Pipeline')]",
+			"name": "[concat(parameters('factoryName'), '/Olympic Games Medal Tally Ingestion')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "Fetch_Data_From_Olympic_Games_Medal_Tally",
+						"name": "Copy_Olympic_Games_Medal_Tally_Data",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -713,6 +1053,148 @@
 								"parameters": {}
 							}
 						]
+					},
+					{
+						"name": "Create_External_Olympic_Games_Medal_Tally_Table",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Copy_Olympic_Games_Medal_Tally_Data",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"headers": {},
+							"url": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.1/jobs/run-now/",
+							"body": {
+								"value": "{\n  \"job_id\": \"950675784745583\",\n  \"python_params\": [\n    \"--command\", \"adls-ingest\",\n    \"--target-path\", \"/path/to/data\",\n    \"--target-format\", \"delta\",\n    \"--target-mode\", \"append\",\n    \"--target-catalog\", \"test_adf\",\n    \"--target-schema\", \"test\",\n    \"--target-table\", \"olympic_games_medal_tally\",\n    \"--source-path\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/olympic_games_medal_tally/\",\n    \"--source-format\", \"parquet\",\n    \"--source-schema-location\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/schemas/olympic_games_medal_tally/\",\n    \"--target-checkpoint-location\", \"abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/checkpoints/olympic_games_medal_tally/\"\n    ]\n}\n",
+								"type": "Expression"
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+							}
+						}
+					},
+					{
+						"name": "Wait_For_Databricks_Job_Completion",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "Create_External_Olympic_Games_Medal_Tally_Table",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Check_Databricks_Job_Status').output.state.life_cycle_state, 'TERMINATED')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Check_Databricks_Job_Status",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 5,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.0/jobs/runs/get?run_id=@{activity('Create_External_Olympic_Games_Medal_Tally_Table').output.run_id}\n",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "MSI",
+											"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+										}
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					},
+					{
+						"name": "Check_Job_Success",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Wait_For_Databricks_Job_Completion",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Check_Databricks_Job_Status').output.state.result_state, 'SUCCESS')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Fail",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": {
+											"value": "Pipeline failed due to unsuccessful job completion.",
+											"type": "Expression"
+										},
+										"errorCode": {
+											"value": "DB_JOB_FAILURE",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "Success",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineReturnValue",
+										"value": [
+											{
+												"key": "success",
+												"value": {
+													"type": "Boolean",
+													"content": true
+												}
+											}
+										],
+										"setSystemVariable": true
+									}
+								}
+							]
+						}
 					}
 				],
 				"policy": {

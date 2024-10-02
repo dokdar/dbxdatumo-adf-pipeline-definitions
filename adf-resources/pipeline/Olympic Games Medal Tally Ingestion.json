@@ -131,7 +131,7 @@
 				}
 			},
 			{
-				"name": "Check Job Success",
+				"name": "Check_Job_Success",
 				"type": "IfCondition",
 				"dependsOn": [
 					{

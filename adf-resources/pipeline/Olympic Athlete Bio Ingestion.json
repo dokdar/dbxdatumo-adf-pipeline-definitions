@@ -193,6 +193,12 @@
 				}
 			}
 		],
+		"parameters": {
+			"DATABRICKS_HOST": {
+				"type": "string",
+				"defaultValue": "adb-3820050844556791.11.azuredatabricks.net"
+			}
+		},
 		"annotations": []
 	}
 }

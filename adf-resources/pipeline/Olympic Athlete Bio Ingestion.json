@@ -117,7 +117,7 @@
 							"typeProperties": {
 								"method": "GET",
 								"url": {
-									"value": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.0/jobs/runs/get?run_id=@{activity('Databricks_Job_Execution_For_Olympic_Athlete_Bio_Table').output.run_id}\n",
+									"value": "https://adb-3820050844556791.11.azuredatabricks.net/api/2.1/jobs/runs/get?run_id=@{activity('Databricks_Job_Execution_For_Olympic_Athlete_Bio_Table').output.run_id}\n",
 									"type": "Expression"
 								},
 								"authentication": {

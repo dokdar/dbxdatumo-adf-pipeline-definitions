@@ -1,0 +1,412 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name"
+		},
+		"OlympicAthleteBioSqlDatabase1": {
+			"type": "string"
+		},
+		"AzureDataLakeStorage1": {
+			"type": "string"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Olympic Athlete Bio Ingestion')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_Olympic_Athlete_Bio_Data",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Olympic_Athlete_Bio_Table",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Olympic_Athlete_Bio_Storage",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "Databricks_Job_Execution_For_Olympic_Athlete_Bio_Table",
+						"type": "WebActivity",
+						"dependsOn": [
+							{
+								"activity": "Copy_Olympic_Athlete_Bio_Data",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"method": "POST",
+							"url": {
+								"value": "@concat('https://', pipeline().parameters.DATABRICKS_HOST, '/api/2.1/jobs/run-now')",
+								"type": "Expression"
+							},
+							"body": {
+								"value": "{\n  \"job_id\": \"@{pipeline().parameters.DATABRICKS_JOB_ID}\",\n  \"python_params\": [\n    \"--command\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_COMMAND}\",\n    \"--target-path\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_PATH}\",\n    \"--target-format\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_FORMAT}\",\n    \"--target-mode\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_MODE}\",\n    \"--target-catalog\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_CATALOG}\",\n    \"--target-schema\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_SCHEMA}\",\n    \"--target-table\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_TABLE}\",\n    \"--source-path\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_SOURCE_PATH}\",\n    \"--source-format\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_SOURCE_FORMAT}\",\n    \"--source-schema-location\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_SOURCE_SCHEMA_LOCATION}\",\n    \"--target-checkpoint-location\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_CHECKPOINT_LOCATION}\"\n  ]\n}\n",
+								"type": "Expression"
+							},
+							"authentication": {
+								"type": "MSI",
+								"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+							}
+						}
+					},
+					{
+						"name": "Wait_For_Databricks_Job_Completion",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "Databricks_Job_Execution_For_Olympic_Athlete_Bio_Table",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Check_Databricks_Job_Status').output.state.life_cycle_state, 'TERMINATED')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Check_Databricks_Job_Status",
+									"type": "WebActivity",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 5,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"url": {
+											"value": "@concat('https://', pipeline().parameters.DATABRICKS_HOST, '/api/2.1/jobs/runs/get?run_id=', activity('Databricks_Job_Execution_For_Olympic_Athlete_Bio_Table').output.run_id)\n",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "MSI",
+											"resource": "2ff814a6-3304-4ab8-85cb-cd0e6f879c1d"
+										}
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					},
+					{
+						"name": "Check_Job_Success",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Wait_For_Databricks_Job_Completion",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(activity('Check_Databricks_Job_Status').output.state.result_state, 'SUCCESS')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Fail",
+									"type": "Fail",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"message": {
+											"value": "Pipeline failed due to unsuccessful job completion.",
+											"type": "Expression"
+										},
+										"errorCode": {
+											"value": "DB_JOB_FAILURE",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "Success",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineReturnValue",
+										"value": [
+											{
+												"key": "success",
+												"value": {
+													"type": "Boolean",
+													"content": true
+												}
+											}
+										],
+										"setSystemVariable": true
+									}
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"DATABRICKS_HOST": {
+						"type": "string",
+						"defaultValue": "adb-3820050844556791.11.azuredatabricks.net"
+					},
+					"DATABRICKS_JOB_ID": {
+						"type": "string",
+						"defaultValue": "950675784745583"
+					},
+					"DATABRICKS_JOB_ARG_COMMAND": {
+						"type": "string",
+						"defaultValue": "adls-ingest"
+					},
+					"DATABRICKS_JOB_ARG_TARGET_PATH": {
+						"type": "string",
+						"defaultValue": "/path/to/data"
+					},
+					"DATABRICKS_JOB_ARG_TARGET_FORMAT": {
+						"type": "string",
+						"defaultValue": "delta"
+					},
+					"DATABRICKS_JOB_ARG_TARGET_MODE": {
+						"type": "string",
+						"defaultValue": "append"
+					},
+					"DATABRICKS_JOB_ARG_TARGET_CATALOG": {
+						"type": "string",
+						"defaultValue": "test_adf"
+					},
+					"DATABRICKS_JOB_ARG_TARGET_SCHEMA": {
+						"type": "string",
+						"defaultValue": "test"
+					},
+					"DATABRICKS_JOB_ARG_TARGET_TABLE": {
+						"type": "string",
+						"defaultValue": "olympic_athlete_bio"
+					},
+					"DATABRICKS_JOB_ARG_SOURCE_PATH": {
+						"type": "string",
+						"defaultValue": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/olympic_athlete_bio/"
+					},
+					"DATABRICKS_JOB_ARG_SOURCE_FORMAT": {
+						"type": "string",
+						"defaultValue": "parquet"
+					},
+					"DATABRICKS_JOB_ARG_SOURCE_SCHEMA_LOCATION": {
+						"type": "string",
+						"defaultValue": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/schemas/olympic_athlete_bio/"
+					},
+					"DATABRICKS_JOB_ARG_TARGET_CHECKPOINT_LOCATION": {
+						"type": "string",
+						"defaultValue": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/checkpoints/olympic_athlete_bio/"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Olympic_Athlete_Bio_Table')]",
+				"[concat(variables('factoryId'), '/datasets/Olympic_Athlete_Bio_Storage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Olympic_Athlete_Bio_Table')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('OlympicAthleteBioSqlDatabase1')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "athlete_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "sex",
+						"type": "nvarchar"
+					},
+					{
+						"name": "born",
+						"type": "nvarchar"
+					},
+					{
+						"name": "height",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "weight",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country_noc",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "special_notes",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Olympic_Athlete_Bio"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Olympic_Athlete_Bio_Storage')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('AzureDataLakeStorage1')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat('output_', formatDateTime(utcnow(), 'yyyy-MM-dd_HH-mm-ss'), '.parquet')",
+							"type": "Expression"
+						},
+						"folderPath": "olympic_athlete_bio",
+						"fileSystem": "dbxdatumo-external"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "athlete_id",
+						"type": "INT32"
+					},
+					{
+						"name": "name",
+						"type": "UTF8"
+					},
+					{
+						"name": "sex",
+						"type": "UTF8"
+					},
+					{
+						"name": "born",
+						"type": "UTF8"
+					},
+					{
+						"name": "height",
+						"type": "INT32"
+					},
+					{
+						"name": "weight",
+						"type": "UTF8"
+					},
+					{
+						"name": "country",
+						"type": "UTF8"
+					},
+					{
+						"name": "country_noc",
+						"type": "UTF8"
+					},
+					{
+						"name": "description",
+						"type": "UTF8"
+					},
+					{
+						"name": "special_notes",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": []
+		}
+	]
+}

@@ -1,5 +1,5 @@
 {
-	"name": "Olympic Athlete Bio Ingestion",
+	"name": "Olympic Athlete Bio Ingestion From Template",
 	"properties": {
 		"activities": [
 			{
@@ -41,13 +41,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Olympic_Athlete_Bio_Table",
+						"referenceName": "Olympic_Athlete_Bio_Table1",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "Olympic_Athlete_Bio_Storage",
+						"referenceName": "Olympic_Athlete_Bio_Storage1",
 						"type": "DatasetReference"
 					}
 				]

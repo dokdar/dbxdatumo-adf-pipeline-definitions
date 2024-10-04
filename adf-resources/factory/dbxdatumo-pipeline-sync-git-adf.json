@@ -2,6 +2,10 @@
 	"name": "dbxdatumo-pipeline-sync-git-adf",
 	"properties": {
 		"globalParameters": {
+			"env": {
+				"type": "string",
+				"value": "dev"
+			},
 			"temp": {
 				"type": "string",
 				"value": "temp"

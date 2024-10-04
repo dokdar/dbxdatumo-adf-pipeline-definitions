@@ -5,6 +5,10 @@
 			"env": {
 				"type": "string",
 				"value": "dev"
+			},
+			"temp": {
+				"type": "string",
+				"value": "temp"
 			}
 		}
 	},

@@ -41,6 +41,10 @@
 			"DATABRICKS_JOB_ARG_TARGET_MODE": {
 				"type": "string",
 				"value": "append"
+			},
+			"DATABRICKS_JOB_ARG_TARGET_CATALOG": {
+				"type": "string",
+				"value": "test_adf"
 			}
 		}
 	},

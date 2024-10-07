@@ -37,6 +37,10 @@
 			"DATABRICKS_JOB_ARG_TARGET_FORMAT": {
 				"type": "string",
 				"value": "delta"
+			},
+			"DATABRICKS_JOB_ARG_TARGET_MODE": {
+				"type": "string",
+				"value": "append"
 			}
 		}
 	},

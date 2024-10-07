@@ -33,6 +33,10 @@
 			"DATABRICKS_JOB_ARG_TARGET_PATH": {
 				"type": "string",
 				"value": "/path/to/data"
+			},
+			"DATABRICKS_JOB_ARG_TARGET_FORMAT": {
+				"type": "string",
+				"value": "delta"
 			}
 		}
 	},

@@ -25,6 +25,10 @@
 			"DATABRICKS_JOB_ID": {
 				"type": "string",
 				"value": "950675784745583"
+			},
+			"DATABRICKS_JOB_ARG_COMMAND": {
+				"type": "string",
+				"value": "adls-ingest"
 			}
 		}
 	},

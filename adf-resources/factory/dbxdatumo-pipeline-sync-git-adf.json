@@ -45,6 +45,10 @@
 			"DATABRICKS_JOB_ARG_TARGET_CATALOG": {
 				"type": "string",
 				"value": "test_adf"
+			},
+			"DATABRICKS_JOB_ARG_TARGET_SCHEMA": {
+				"type": "string",
+				"value": "test"
 			}
 		}
 	},

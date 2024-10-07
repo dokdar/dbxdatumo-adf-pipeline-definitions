@@ -57,6 +57,10 @@
 			"DATABRICKS_JOB_ARG_TARGET_CHECKPOINT_LOCATION": {
 				"type": "string",
 				"value": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/checkpoints/olympic_athlete_bio/"
+			},
+			"ENVIRONMENT": {
+				"type": "string",
+				"value": "dev"
 			}
 		}
 	},

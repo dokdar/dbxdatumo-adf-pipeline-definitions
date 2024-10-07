@@ -3,12 +3,60 @@
 		"type": "string",
 		"value": "dev"
 	},
-	"temp": {
+	"DATABRICKS_HOST": {
 		"type": "string",
-		"value": "temp"
+		"value": "adb-3820050844556791.11.azuredatabricks.net"
 	},
-	"my_global_param_on_main": {
-		"type": "bool",
-		"value": true
+	"DATABRICKS_JOB_ID": {
+		"type": "string",
+		"value": "950675784745583"
+	},
+	"DATABRICKS_JOB_ARG_COMMAND": {
+		"type": "string",
+		"value": "adls-ingest"
+	},
+	"DATABRICKS_JOB_ARG_TARGET_PATH": {
+		"type": "string",
+		"value": "/path/to/data"
+	},
+	"DATABRICKS_JOB_ARG_TARGET_FORMAT": {
+		"type": "string",
+		"value": "delta"
+	},
+	"DATABRICKS_JOB_ARG_TARGET_MODE": {
+		"type": "string",
+		"value": "append"
+	},
+	"DATABRICKS_JOB_ARG_TARGET_CATALOG": {
+		"type": "string",
+		"value": "test_adf"
+	},
+	"DATABRICKS_JOB_ARG_TARGET_SCHEMA": {
+		"type": "string",
+		"value": "test"
+	},
+	"DATABRICKS_JOB_ARG_TARGET_TABLE": {
+		"type": "string",
+		"value": "olympic_athlete_bio"
+	},
+	"DATABRICKS_JOB_ARG_SOURCE_PATH": {
+		"type": "string",
+		"value": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/olympic_athlete_bio/"
+	},
+	"DATABRICKS_JOB_ARG_SOURCE_FORMAT": {
+		"type": "string",
+		"value": "parquet"
+	},
+	"DATABRICKS_JOB_ARG_SOURCE_SCHEMA_LOCATION": {
+		"type": "string",
+		"value": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/schemas/olympic_athlete_bio/"
+	},
+	"DATABRICKS_JOB_ARG_TARGET_CHECKPOINT_LOCATION": {
+		"type": "string",
+		"value": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/checkpoints/olympic_athlete_bio/"
+	},
+	"ENVIRONMENT": {
+		"type": "string",
+		"value": "dev"
 	}
 }

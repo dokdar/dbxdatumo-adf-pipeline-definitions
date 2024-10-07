@@ -11,6 +11,9 @@
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"value": "https://dbxdatumoextstorage.dfs.core.windows.net/"
 		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"value": "0924-084751-94uupp64"
+		},
 		"OlympicAthleteBioSqlDatabase1_properties_typeProperties_server": {
 			"value": "dbxdatumo-sql-server.database.windows.net"
 		},

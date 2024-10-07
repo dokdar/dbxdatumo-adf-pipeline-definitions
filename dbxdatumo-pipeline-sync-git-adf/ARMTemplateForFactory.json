@@ -15,6 +15,10 @@
 			"type": "string",
 			"defaultValue": "https://dbxdatumoextstorage.dfs.core.windows.net/"
 		},
+		"AzureDatabricks1_properties_typeProperties_existingClusterId": {
+			"type": "string",
+			"defaultValue": "0924-084751-94uupp64"
+		},
 		"OlympicAthleteBioSqlDatabase1_properties_typeProperties_server": {
 			"type": "string",
 			"defaultValue": "dbxdatumo-sql-server.database.windows.net"
@@ -40,6 +44,111 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Feature Flag')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FeatureFlag",
+						"type": "IfCondition",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(pipeline().globalParameters.env, 'dev')",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "False",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineReturnValue",
+										"value": [
+											{
+												"key": "env",
+												"value": {
+													"type": "Boolean",
+													"content": false
+												}
+											}
+										],
+										"setSystemVariable": true
+									}
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "True",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "pipelineReturnValue",
+										"value": [
+											{
+												"key": "env",
+												"value": {
+													"type": "Boolean",
+													"content": true
+												}
+											}
+										],
+										"setSystemVariable": true
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Transformation",
+						"type": "DatabricksNotebook",
+						"dependsOn": [
+							{
+								"activity": "FeatureFlag",
+								"dependencyConditions": [
+									"Completed"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"notebookPath": "/Users/dariusz.budynek@datumo.pl/budynek-jdbc"
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDatabricks1",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDatabricks1')]"
+			]
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Olympic Athlete Bio Ingestion From Template')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -121,11 +230,11 @@
 							"method": "POST",
 							"headers": {},
 							"url": {
-								"value": "@concat('https://', pipeline().parameters.DATABRICKS_HOST, '/api/2.1/jobs/run-now')",
+								"value": "@concat('https://', pipeline().globalParameters.DATABRICKS_HOST, '/api/2.1/jobs/run-now')",
 								"type": "Expression"
 							},
 							"body": {
-								"value": "{\n  \"job_id\": \"@{pipeline().parameters.DATABRICKS_JOB_ID}\",\n  \"python_params\": [\n    \"--command\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_COMMAND}\",\n    \"--target-path\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_PATH}\",\n    \"--target-format\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_FORMAT}\",\n    \"--target-mode\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_MODE}\",\n    \"--target-catalog\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_CATALOG}\",\n    \"--target-schema\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_SCHEMA}\",\n    \"--target-table\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_TABLE}\",\n    \"--source-path\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_SOURCE_PATH}\",\n    \"--source-format\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_SOURCE_FORMAT}\",\n    \"--source-schema-location\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_SOURCE_SCHEMA_LOCATION}\",\n    \"--target-checkpoint-location\", \"@{pipeline().parameters.DATABRICKS_JOB_ARG_TARGET_CHECKPOINT_LOCATION}\"\n  ]\n}\n",
+								"value": "{\n  \"job_id\": \"@{pipeline().globalParameters.DATABRICKS_JOB_ID}\",\n  \"python_params\": [\n    \"--command\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_COMMAND}\",\n    \"--target-path\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_TARGET_PATH}\",\n    \"--target-format\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_TARGET_FORMAT}\",\n    \"--target-mode\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_TARGET_MODE}\",\n    \"--target-catalog\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_TARGET_CATALOG}\",\n    \"--target-schema\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_TARGET_SCHEMA}\",\n    \"--target-table\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_TARGET_TABLE}\",\n    \"--source-path\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_SOURCE_PATH}\",\n    \"--source-format\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_SOURCE_FORMAT}\",\n    \"--source-schema-location\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_SOURCE_SCHEMA_LOCATION}\",\n    \"--target-checkpoint-location\", \"@{pipeline().globalParameters.DATABRICKS_JOB_ARG_TARGET_CHECKPOINT_LOCATION}\"\n  ]\n}\n",
 								"type": "Expression"
 							},
 							"authentication": {
@@ -168,7 +277,7 @@
 										"method": "GET",
 										"headers": {},
 										"url": {
-											"value": "@concat('https://', pipeline().parameters.DATABRICKS_HOST, '/api/2.1/jobs/runs/get?run_id=', activity('Databricks_Job_Execution_For_Olympic_Athlete_Bio_Table').output.run_id)\n",
+											"value": "@concat('https://', pipeline().globalParameters.DATABRICKS_HOST, '/api/2.1/jobs/runs/get?run_id=', activity('Databricks_Job_Execution_For_Olympic_Athlete_Bio_Table').output.run_id)\n",
 											"type": "Expression"
 										},
 										"authentication": {
@@ -246,60 +355,6 @@
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"DATABRICKS_HOST": {
-						"type": "string",
-						"defaultValue": "adb-3820050844556791.11.azuredatabricks.net"
-					},
-					"DATABRICKS_JOB_ID": {
-						"type": "string",
-						"defaultValue": "950675784745583"
-					},
-					"DATABRICKS_JOB_ARG_COMMAND": {
-						"type": "string",
-						"defaultValue": "adls-ingest"
-					},
-					"DATABRICKS_JOB_ARG_TARGET_PATH": {
-						"type": "string",
-						"defaultValue": "/path/to/data"
-					},
-					"DATABRICKS_JOB_ARG_TARGET_FORMAT": {
-						"type": "string",
-						"defaultValue": "delta"
-					},
-					"DATABRICKS_JOB_ARG_TARGET_MODE": {
-						"type": "string",
-						"defaultValue": "append"
-					},
-					"DATABRICKS_JOB_ARG_TARGET_CATALOG": {
-						"type": "string",
-						"defaultValue": "test_adf"
-					},
-					"DATABRICKS_JOB_ARG_TARGET_SCHEMA": {
-						"type": "string",
-						"defaultValue": "test"
-					},
-					"DATABRICKS_JOB_ARG_TARGET_TABLE": {
-						"type": "string",
-						"defaultValue": "olympic_athlete_bio"
-					},
-					"DATABRICKS_JOB_ARG_SOURCE_PATH": {
-						"type": "string",
-						"defaultValue": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/olympic_athlete_bio/"
-					},
-					"DATABRICKS_JOB_ARG_SOURCE_FORMAT": {
-						"type": "string",
-						"defaultValue": "parquet"
-					},
-					"DATABRICKS_JOB_ARG_SOURCE_SCHEMA_LOCATION": {
-						"type": "string",
-						"defaultValue": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/schemas/olympic_athlete_bio/"
-					},
-					"DATABRICKS_JOB_ARG_TARGET_CHECKPOINT_LOCATION": {
-						"type": "string",
-						"defaultValue": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/checkpoints/olympic_athlete_bio/"
-					}
 				},
 				"annotations": []
 			},
@@ -1608,6 +1663,22 @@
 						"type": "SecureString",
 						"value": "[parameters('AzureDataLakeStorage1_accountKey')]"
 					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricks1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricks",
+				"typeProperties": {
+					"domain": "https://adb-3820050844556791.11.azuredatabricks.net",
+					"authentication": "MSI",
+					"workspaceResourceId": "/subscriptions/25b46685-a09a-4014-9994-886ded9cf91d/resourceGroups/dbxdatumo-rg/providers/Microsoft.Databricks/workspaces/dbxdatumo-dbx",
+					"existingClusterId": "[parameters('AzureDatabricks1_properties_typeProperties_existingClusterId')]"
 				}
 			},
 			"dependsOn": []

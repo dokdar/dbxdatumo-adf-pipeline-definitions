@@ -21,6 +21,10 @@
 			"DATABRICKS_HOST": {
 				"type": "string",
 				"value": "adb-3820050844556791.11.azuredatabricks.net"
+			},
+			"DATABRICKS_JOB_ID": {
+				"type": "string",
+				"value": "950675784745583"
 			}
 		}
 	},

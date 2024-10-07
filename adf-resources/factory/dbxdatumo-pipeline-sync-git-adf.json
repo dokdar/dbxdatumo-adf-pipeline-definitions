@@ -29,6 +29,10 @@
 			"DATABRICKS_JOB_ARG_COMMAND": {
 				"type": "string",
 				"value": "adls-ingest"
+			},
+			"DATABRICKS_JOB_ARG_TARGET_PATH": {
+				"type": "string",
+				"value": "/path/to/data"
 			}
 		}
 	},

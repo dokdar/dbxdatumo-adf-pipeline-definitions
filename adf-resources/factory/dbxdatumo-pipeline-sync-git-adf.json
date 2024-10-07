@@ -17,6 +17,10 @@
 			"my_global_param_on_main": {
 				"type": "bool",
 				"value": true
+			},
+			"DATABRICKS_HOST": {
+				"type": "string",
+				"value": "adb-3820050844556791.11.azuredatabricks.net"
 			}
 		}
 	},

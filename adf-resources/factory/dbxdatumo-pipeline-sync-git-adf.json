@@ -13,6 +13,10 @@
 			"environment": {
 				"type": "string",
 				"value": "dev"
+			},
+			"my_global_param_on_main": {
+				"type": "bool",
+				"value": true
 			}
 		}
 	},

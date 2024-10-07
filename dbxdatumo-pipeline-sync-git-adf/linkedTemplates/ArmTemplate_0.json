@@ -116,7 +116,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@equals(pipeline().globalParameters.env, 'dev')",
+								"value": "@equals(pipeline().globalParameters.ENVIRONMENT, 'dev')",
 								"type": "Expression"
 							},
 							"ifFalseActivities": [

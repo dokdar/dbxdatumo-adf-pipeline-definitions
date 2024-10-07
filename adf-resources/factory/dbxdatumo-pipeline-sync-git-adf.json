@@ -49,6 +49,10 @@
 			"DATABRICKS_JOB_ARG_TARGET_SCHEMA": {
 				"type": "string",
 				"value": "test"
+			},
+			"DATABRICKS_JOB_ARG_TARGET_TABLE": {
+				"type": "string",
+				"value": "olympic_athlete_bio"
 			}
 		}
 	},

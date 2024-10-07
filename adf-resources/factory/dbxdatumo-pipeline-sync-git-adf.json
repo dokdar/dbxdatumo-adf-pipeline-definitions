@@ -53,6 +53,10 @@
 			"DATABRICKS_JOB_ARG_TARGET_TABLE": {
 				"type": "string",
 				"value": "olympic_athlete_bio"
+			},
+			"DATABRICKS_JOB_ARG_SOURCE_PATH": {
+				"type": "string",
+				"value": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/olympic_athlete_bio/"
 			}
 		}
 	},

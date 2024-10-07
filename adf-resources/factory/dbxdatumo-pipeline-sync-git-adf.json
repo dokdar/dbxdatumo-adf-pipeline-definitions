@@ -9,6 +9,10 @@
 			"temp": {
 				"type": "string",
 				"value": "temp"
+			},
+			"environment": {
+				"type": "string",
+				"value": "dev"
 			}
 		}
 	},

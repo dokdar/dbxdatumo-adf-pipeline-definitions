@@ -61,6 +61,10 @@
 			"DATABRICKS_JOB_ARG_SOURCE_FORMAT": {
 				"type": "string",
 				"value": "parquet"
+			},
+			"DATABRICKS_JOB_ARG_SOURCE_SCHEMA_LOCATION": {
+				"type": "string",
+				"value": "abfss://dbxdatumo-external@dbxdatumoextstorage.dfs.core.windows.net/schemas/olympic_athlete_bio/"
 			}
 		}
 	},

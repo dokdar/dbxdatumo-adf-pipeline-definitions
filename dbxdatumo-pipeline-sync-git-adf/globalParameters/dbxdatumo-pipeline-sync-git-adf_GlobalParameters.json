@@ -6,5 +6,9 @@
 	"temp": {
 		"type": "string",
 		"value": "temp"
+	},
+	"my_global_param_on_main": {
+		"type": "bool",
+		"value": true
 	}
 }
